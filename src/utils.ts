@@ -15,7 +15,7 @@ export async function createScanResult(trivyStatus: number, dockleStatus: number
   const gitHubClient = new GitHubClient(process.env.GITHUB_REPOSITORY, inputHelper.githubToken);
   const scanResultPayload = getScanResultPayload(trivyStatus, dockleStatus);
   const response = await gitHubClient.createScanResult(scanResultPayload);
-  
+
   if (response.statusCode == StatusCodes.UNPROCESSABLE_ENTITY
     && response.body
     && response.body.message
@@ -23,7 +23,7 @@ export async function createScanResult(trivyStatus: number, dockleStatus: number
     // If the app is not installed, try to create the check run using GitHub actions token.
     console.log('Looks like the scanitizer app is not installed on the repo. Falling back to check run creation through GitHub actions app...');
     console.log(`For a better experience with managing allowedlist, install ${APP_NAME} app from ${APP_LINK}.`);
-    
+
     const checkRunPayload = getCheckRunPayload(trivyStatus, dockleStatus);
     await gitHubClient.createCheckRun(checkRunPayload);
   }
@@ -48,6 +48,7 @@ export function getScanReport(trivyStatus: number, dockleStatus: number): string
     "bestPracticeViolations": dockleOutput
   };
   fs.writeFileSync(scanReportPath, JSON.stringify(scanReportObject, null, 2));
+
   return scanReportPath;
 }
 
@@ -120,10 +121,30 @@ function getCheckRunPayload(trivyStatus: number, dockleStatus: number): any {
   return payload;
 }
 
+function createSarifFile(text: string) {
+  var contents = {
+    "results": {
+      "ruleId": "ContainerScan",
+      "level": "info",
+      "message": {
+        "text": text
+      }
+    }
+  };
+
+  const scanReportPath = `${fileHelper.getContainerScanDirectory()}/scanreport.sarif`;
+  fs.writeFileSync(scanReportPath, JSON.stringify(contents, null, 2));
+  core.setOutput('sarif-file-path', scanReportPath);
+  return scanReportPath;
+}
+
 function getScanResultPayload(trivyStatus: number, dockleStatus: number): any {
   const headSha = gitHubHelper.getHeadSha();
   const checkConclusion = getCheckConclusion(trivyStatus, dockleStatus);
   const checkSummary = getCheckSummary(trivyStatus, dockleStatus);
+
+  createSarifFile(checkSummary);
+
   const checkText = getCheckText(trivyStatus, dockleStatus);
 
   const payload = {

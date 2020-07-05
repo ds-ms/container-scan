@@ -26,6 +26,8 @@ inputs:
 outputs:
   scan-report-path:
     description: 'File path where the scan results are stored'
+  sarif-file-path:
+    description: 'Results in SARIF'
 
 runs:
   using: 'node12'
