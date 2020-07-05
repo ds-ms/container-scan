@@ -123,11 +123,13 @@ function getCheckRunPayload(trivyStatus: number, dockleStatus: number): any {
 
 function createSarifFile(text: string) {
   var contents = {
-    "results": {
-      "ruleId": "ContainerScan",
-      "level": "info",
-      "message": {
-        "text": text
+    "runs": {
+      "results": {
+        "ruleId": "ContainerScan",
+        "level": "info",
+        "message": {
+          "text": text
+        }
       }
     }
   };
