@@ -210,10 +210,9 @@ function getScanResultPayload(trivyStatus: number, dockleStatus: number): any {
   const checkConclusion = getCheckConclusion(trivyStatus, dockleStatus);
   const checkSummary = getCheckSummary(trivyStatus, dockleStatus);
 
-  createSarifFile(checkSummary, checkConclusion);
-
   const checkText = getCheckText(trivyStatus, dockleStatus);
-
+  
+  createSarifFile(checkSummary, checkText);
   const payload = {
     action_name: process.env['GITHUB_ACTION'],
     action_sha: process.env['GITHUB_ACTION'],
