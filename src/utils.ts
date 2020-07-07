@@ -145,7 +145,7 @@ function createSarifFile(checkSummary: string, checkConclusion: string) {
                   "text": "Docker Scan results"
                 },
                 "defaultConfiguration": {
-                  "level": "note"
+                  "level": "error"
                 },
                 "properties": {
                   "tags": [
@@ -211,7 +211,7 @@ function getScanResultPayload(trivyStatus: number, dockleStatus: number): any {
   const checkSummary = getCheckSummary(trivyStatus, dockleStatus);
 
   const checkText = getCheckText(trivyStatus, dockleStatus);
-  
+
   createSarifFile(checkSummary, checkText);
   const payload = {
     action_name: process.env['GITHUB_ACTION'],
