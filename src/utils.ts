@@ -157,6 +157,9 @@ function createSarifFile(text: string) {
                   "description": "These are the results from your azure/container-scan@v0",
                   "id": `azure-container-scan-report-${run_number}`,
                   "problem.severity": "recommendation"
+                },
+                "help": {
+                  "text": "some help text"
                 }
               }
             ]
