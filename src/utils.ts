@@ -122,7 +122,7 @@ function getCheckRunPayload(trivyStatus: number, dockleStatus: number): any {
   return payload;
 }
 
-function createSarifFile(text: string) {
+function createSarifFile(checkSummary: string, checkConclusion: string) {
   const run_number = process.env["GITHUB_RUN_ID"];
   var contents = {
     "$schema": "https://raw.githubusercontent.com/oasis-tcs/sarif-spec/master/Schemata/sarif-schema-2.1.0.json",
@@ -139,7 +139,7 @@ function createSarifFile(text: string) {
                 "id": `azure-container-scan-report-${run_number}`,
                 "name": "Azure Container Scan",
                 "shortDescription": {
-                  "text": "Docker Scan results"
+                  "text": `Azure Container scan report for ${run_number}`
                 },
                 "fullDescription": {
                   "text": "Docker Scan results"
@@ -159,7 +159,7 @@ function createSarifFile(text: string) {
                   "problem.severity": "recommendation"
                 },
                 "help": {
-                  "text": "some help text"
+                  "text": checkConclusion
                 }
               }
             ]
@@ -170,7 +170,7 @@ function createSarifFile(text: string) {
             "ruleId": `azure-container-scan-report-${run_number}`,
             "ruleIndex": 0,
             "message": {
-              "text": text
+              "text": checkSummary
             },
             "locations": [
               {
@@ -210,7 +210,7 @@ function getScanResultPayload(trivyStatus: number, dockleStatus: number): any {
   const checkConclusion = getCheckConclusion(trivyStatus, dockleStatus);
   const checkSummary = getCheckSummary(trivyStatus, dockleStatus);
 
-  createSarifFile(checkSummary);
+  createSarifFile(checkSummary, checkConclusion);
 
   const checkText = getCheckText(trivyStatus, dockleStatus);
 
