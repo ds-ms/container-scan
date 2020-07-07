@@ -145,7 +145,7 @@ function createSarifFile(text: string) {
                   "text": "Docker Scan results"
                 },
                 "defaultConfiguration": {
-                  "level": "error"
+                  "level": "note"
                 },
                 "properties": {
                   "tags": [
