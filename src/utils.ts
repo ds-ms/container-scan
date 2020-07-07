@@ -7,6 +7,7 @@ import * as trivyHelper from './trivyHelper';
 import * as fileHelper from './fileHelper';
 import { GitHubClient } from './githubClient';
 import { StatusCodes } from "./httpClient";
+import { run } from './main';
 
 const APP_NAME = 'Scanitizer';
 const APP_LINK = 'https://github.com/apps/scanitizer';
@@ -122,16 +123,77 @@ function getCheckRunPayload(trivyStatus: number, dockleStatus: number): any {
 }
 
 function createSarifFile(text: string) {
+  const run_number = process.env["GITHUB_RUN_ID"];
   var contents = {
-    "runs": {
-      "results": {
-        "ruleId": "ContainerScan",
-        "level": "info",
-        "message": {
-          "text": text
+    "$schema": "https://raw.githubusercontent.com/oasis-tcs/sarif-spec/master/Schemata/sarif-schema-2.1.0.json",
+    "version": "2.1.0",
+    "runs": [
+      {
+        "tool": {
+          "driver": {
+            "name": "Azure-Container-Scan",
+            "organization": "Azure",
+            "version": "0.0.1",
+            "rules": [
+              {
+                "id": `azure-container-scan-report-${run_number}`,
+                "name": "Azure Container Scan",
+                "shortDescription": {
+                  "text": "Docker Scan results"
+                },
+                "fullDescription": {
+                  "text": "Docker Scan results"
+                },
+                "defaultConfiguration": {
+                  "level": "error"
+                },
+                "properties": {
+                  "tags": [
+                    "security"
+                  ],
+                  "kind": "problem",
+                  "precision": "high",
+                  "name": `Azure Container Scan report - ${run_number}`,
+                  "description": "These are the results from your azure/container-scan@v0",
+                  "id": `azure-container-scan-report-${run_number}`,
+                  "problem.severity": "recommendation"
+                }
+              }
+            ]
+          }
+        },
+        "results": [
+          {
+            "ruleId": `azure-container-scan-report-${run_number}`,
+            "ruleIndex": 0,
+            "message": {
+              "text": text
+            },
+            "locations": [
+              {
+                "physicalLocation": {
+                  "artifactLocation": {
+                    "uri": "Dockerfile",
+                    "uriBaseId": "%SRCROOT%",
+                    "index": 0
+                  },
+                  "region": {
+                    "startLine": 1,
+                    "startColumn": 1,
+                    "endColumn": 2
+                  }
+                }
+              }
+            ]
+          }
+        ],
+        "columnKind": "utf16CodeUnits",
+        "properties": {
+          "semmle.formatSpecifier": "2.1.0",
+          "semmle.sourceLanguage": "java"
         }
       }
-    }
+    ]
   };
 
   const scanReportPath = `${fileHelper.getContainerScanDirectory()}/scanreport.sarif`;
