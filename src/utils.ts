@@ -258,5 +258,27 @@ function getCheckText(trivyStatus: number, dockleStatus: number): string {
     text = `${text}\n${separator}\n${dockleText}`;
   }
 
+  let allowedlistFilePath = `${process.env['GITHUB_WORKSPACE']}/.github/containerscan/allowedlist.yaml`;
+  let exists = true;
+  let extension = "";
+  if (!fs.existsSync(allowedlistFilePath)) {
+    allowedlistFilePath = `${process.env['GITHUB_WORKSPACE']}/.github/containerscan/allowedlist.yml`;
+    if (!fs.existsSync(allowedlistFilePath)) {
+      exists = false;
+    }
+    else {
+      extension = ".yml"
+    }
+  }
+  else {
+    extension = ".yaml";
+  }
+
+  if (exists) {
+    const commit = process.ENV["GITHUB_SHA"];
+    text = `The exempted vulnerabilities can be found here: https://github.com/${process.ENV['GITHUB_REPOSITORY']}/blob/${commit}/.github/containerscan/allowedlist.${extension}
+    ${text}`
+  }
+
   return text;
 }
