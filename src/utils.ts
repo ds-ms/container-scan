@@ -267,11 +267,11 @@ function getCheckText(trivyStatus: number, dockleStatus: number): string {
       exists = false;
     }
     else {
-      extension = ".yml"
+      extension = "yml"
     }
   }
   else {
-    extension = ".yaml";
+    extension = "yaml";
   }
 
   if (exists) {
