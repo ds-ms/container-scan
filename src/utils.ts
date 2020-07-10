@@ -276,7 +276,7 @@ function getCheckText(trivyStatus: number, dockleStatus: number): string {
 
   if (exists) {
     const commit = process.env["GITHUB_SHA"];
-    text = `The exempted vulnerabilities can be found here: https://github.com/${process.env['GITHUB_REPOSITORY']}/blob/${commit}/.github/containerscan/allowedlist.${extension}\n\n\n${text}`
+    text = `The exempted vulnerabilities can be found <a href="https://github.com/${process.env['GITHUB_REPOSITORY']}/blob/${commit}/.github/containerscan/allowedlist.${extension}" target="_blank">here.</a>\n\n\n${text}`
   }
 
   return text;
